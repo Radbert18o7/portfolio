@@ -10,21 +10,14 @@ export default function BackgroundAudio() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowButton(true);
-    }, 2800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !showButton) return;
+    if (!audio) return;
 
     const startAudio = async () => {
+      setShowButton(true);
       if (isPlaying) return;
 
       try {
-        // Only reset volume to 0 if we haven't played yet to allow fade-in
         if (audio.volume === 1) {
           audio.volume = 0;
         }
@@ -33,7 +26,6 @@ export default function BackgroundAudio() {
         setIsPlaying(true);
         setHasInteracted(true);
         
-        // Smooth fade-in
         if (audio.volume === 0) {
           let vol = 0;
           const fadeInterval = setInterval(() => {
@@ -46,32 +38,30 @@ export default function BackgroundAudio() {
           }, 200);
         }
       } catch (err) {
-        // Silently swallow the browser autoplay block so no error is logged
+        // Silently catch autoplay errors
       }
     };
-
-    // Attempt autoplay immediately when the loader finishes
-    if (!hasInteracted && !isPlaying) {
-      startAudio();
-    }
 
     const handleFallbackInteraction = () => {
       if (!isPlaying && audio.paused && !hasInteracted) {
         startAudio();
       }
     };
+
+    window.addEventListener("enter-experience", startAudio);
     
-    // Fallback listeners for the very first interaction if autoplay was blocked
+    // Fallback listeners just in case
     window.addEventListener("click", handleFallbackInteraction);
     window.addEventListener("scroll", handleFallbackInteraction);
     window.addEventListener("touchstart", handleFallbackInteraction);
 
     return () => {
+      window.removeEventListener("enter-experience", startAudio);
       window.removeEventListener("click", handleFallbackInteraction);
       window.removeEventListener("scroll", handleFallbackInteraction);
       window.removeEventListener("touchstart", handleFallbackInteraction);
     };
-  }, [isPlaying, showButton, hasInteracted]);
+  }, [isPlaying, hasInteracted]);
 
   const toggleAudio = (e: React.MouseEvent) => {
     e.stopPropagation(); // Stop the click from bubbling to the window and instantly un-pausing it!
