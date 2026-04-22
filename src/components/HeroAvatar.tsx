@@ -44,32 +44,21 @@ function AvatarScene() {
   useEffect(() => {
     scene.traverse((child: any) => {
       if (child.isMesh) {
+        // Avaturn uses transparent materials for the body (eyelashes) and hair.
+        // To prevent the body from depth-sorting in front of the hair/glasses
+        // when facing the camera, we enforce a strict renderOrder.
         const name = child.name.toLowerCase();
-        const isHair = name.includes("hair");
-        const isGlass = name.includes("glass");
-
-        // Enforce render order so transparent hair draws after everything else
-        if (isHair) child.renderOrder = 2;
-        else if (isGlass) child.renderOrder = 3;
-        else child.renderOrder = 1;
+        if (name.includes("hair")) {
+          child.renderOrder = 2;
+        } else if (name.includes("glass")) {
+          child.renderOrder = 3;
+        } else if (name.includes("body") || name.includes("look") || name.includes("shoes")) {
+          child.renderOrder = 1;
+        }
 
         const mats = Array.isArray(child.material) ? child.material : [child.material];
         mats.forEach((m: any) => {
           if (m.userData.origTransparent === undefined) {
-            // FIX: Avaturn body/clothes often export as transparent=true because of eyelash/decal blending.
-            // If the body doesn't write depth, the hair behind the head passes depth test and draws THROUGH the face!
-            // This creates "black dots" on the nose/ears and makes hair self-occlude weirdly from the front.
-            // Forcing everything except hair/glasses to be opaque strictly fixes this!
-            if (!isHair && !isGlass) {
-              m.transparent = false;
-              m.depthWrite = true;
-            } else if (isHair) {
-              m.transparent = true;
-              m.depthWrite = false;
-            } else if (isGlass) {
-              m.transparent = true;
-            }
-
             m.userData.origTransparent = m.transparent;
             m.userData.origDepthWrite = m.depthWrite;
           }
@@ -110,7 +99,7 @@ function AvatarScene() {
     const t      = Math.min((window.scrollY ?? 0) / heroH, 1.2);
 
     const zoomP = Math.min(t / 0.60, 1);
-    const fadeP = Math.max(0, Math.min((t - 0.15) / 0.35, 1));
+    const fadeP = Math.max(0, Math.min((t - 0.60) / 0.40, 1));
 
     // Camera: body centre → face, z=7.5 → 1.8
     const lookY = startY.current + (faceY.current - startY.current) * zoomP;
@@ -134,6 +123,8 @@ function AvatarScene() {
           m.userData.isFading = isFading;
           
           m.transparent = isFading ? true : m.userData.origTransparent;
+          // When not fading, we use the original GLTF depthWrite (which is crucial for Avaturn hair blending).
+          // When fading out, we turn off depthWrite to prevent internal occlusion ghosts as it disappears.
           m.depthWrite = isFading ? false : m.userData.origDepthWrite;
           m.needsUpdate = true;
         }
