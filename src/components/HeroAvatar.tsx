@@ -49,6 +49,13 @@ function AvatarScene() {
         if (m.userData.origTransparent === undefined) {
           m.userData.origTransparent = m.transparent;
           m.userData.origDepthWrite = m.depthWrite;
+          m.userData.origAlphaTest = m.alphaTest;
+          
+          // Fix for Ready Player Me / GLTF hair: Use alpha test instead of blend to avoid baldness
+          if (m.transparent) {
+            m.alphaTest = 0.5;
+            m.depthWrite = true;
+          }
         }
       });
     });
@@ -105,13 +112,15 @@ function AvatarScene() {
       if (!child.isMesh) return;
       const mats = Array.isArray(child.material) ? child.material : [child.material];
       mats.forEach((m: any) => {
-        // Only force transparency if fading out. Otherwise, use the original setting.
-        const targetTransparent = isFading ? true : m.userData.origTransparent;
-        
-        if (m.transparent !== targetTransparent) {
-          m.transparent = targetTransparent;
-          // Usually better to disable depthWrite during a full-object fade to avoid internal occlusion artifacts
-          m.depthWrite = isFading ? false : m.userData.origDepthWrite;
+        // We track the current fading state on the material to know when to toggle settings
+        if (m.userData.isFading !== isFading) {
+          m.userData.isFading = isFading;
+          
+          m.transparent = isFading ? true : m.userData.origTransparent;
+          // When NOT fading, ensure depthWrite and alphaTest use the hair fix.
+          // When fading, disable alphaTest so we can do a smooth opacity fade down to 0
+          m.depthWrite = isFading ? false : (m.userData.origTransparent ? true : m.userData.origDepthWrite);
+          m.alphaTest = isFading ? 0 : (m.userData.origTransparent ? 0.5 : m.userData.origAlphaTest);
           m.needsUpdate = true;
         }
         m.opacity = opacity;
