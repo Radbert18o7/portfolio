@@ -26,12 +26,13 @@ function AvatarScene() {
   const { actions, mixer }    = useAnimations(animations, groupRef);
 
   // ── Scale + centre (bounding box) ───────────────────────────────────────
-  const { sf, centreY } = useMemo(() => {
+  const { sf, centreY, centreZ } = useMemo(() => {
     const box    = new THREE.Box3().setFromObject(scene);
     const height = box.max.y - box.min.y;
     const sf     = 3.0 / Math.max(height, 0.01);
     const centreY = -((box.min.y + box.max.y) / 2) * sf;
-    return { sf, centreY };
+    const centreZ = -((box.min.z + box.max.z) / 2) * sf;
+    return { sf, centreY, centreZ };
   }, [scene]);
 
   // Refs for Head bone world position (set after idle settles)
@@ -40,41 +41,17 @@ function AvatarScene() {
   const initTimer = useRef(0);
   const initDone  = useRef(false);
 
-  // ── Store original transparency & Fix Avaturn Render Order ───────────────
+  // ── Store pure original transparency ─────────────────────────────────────
   useEffect(() => {
     scene.traverse((child: any) => {
-      if (child.isMesh) {
-        const name = child.name.toLowerCase();
-        const isHair = name.includes("hair");
-        const isGlass = name.includes("glass");
-
-        // Enforce render order so transparent hair draws after everything else
-        if (isHair) child.renderOrder = 2;
-        else if (isGlass) child.renderOrder = 3;
-        else child.renderOrder = 1;
-
-        const mats = Array.isArray(child.material) ? child.material : [child.material];
-        mats.forEach((m: any) => {
-          if (m.userData.origTransparent === undefined) {
-            // FIX: Avaturn body/clothes often export as transparent=true because of eyelash/decal blending.
-            // If the body doesn't write depth, the hair behind the head passes depth test and draws THROUGH the face!
-            // This creates "black dots" on the nose/ears and makes hair self-occlude weirdly from the front.
-            // Forcing everything except hair/glasses to be opaque strictly fixes this!
-            if (!isHair && !isGlass) {
-              m.transparent = false;
-              m.depthWrite = true;
-            } else if (isHair) {
-              m.transparent = true;
-              m.depthWrite = false;
-            } else if (isGlass) {
-              m.transparent = true;
-            }
-
-            m.userData.origTransparent = m.transparent;
-            m.userData.origDepthWrite = m.depthWrite;
-          }
-        });
-      }
+      if (!child.isMesh) return;
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      mats.forEach((m: any) => {
+        if (m.userData.origTransparent === undefined) {
+          m.userData.origTransparent = m.transparent;
+          m.userData.origDepthWrite = m.depthWrite;
+        }
+      });
     });
   }, [scene]);
 
@@ -91,30 +68,31 @@ function AvatarScene() {
     if (!groupRef.current) return;
     if (mixer) mixer.update(delta);
 
-    // Read Head bone world position once, 0.5s after mount (animation settled)
+    // Read Head bone world position once, 0.5s after mount
     initTimer.current += delta;
     if (!initDone.current && initTimer.current > 0.5) {
       const headBone = groupRef.current.getObjectByName("Head");
       if (headBone) {
         const wp = new THREE.Vector3();
         headBone.getWorldPosition(wp);
-        faceY.current  = wp.y + 0.12;  // slightly above Head bone = eye level
-        startY.current = wp.y - 1.1;   // below head = full body start
+        faceY.current  = wp.y + 0.12;
+        startY.current = wp.y - 1.1;
         initDone.current = true;
       }
     }
 
-    // t: 0 at top of page → 1 when hero bottom exits viewport
     const heroEl = document.getElementById("hero");
     const heroH  = heroEl ? heroEl.offsetHeight : window.innerHeight;
     const t      = Math.min((window.scrollY ?? 0) / heroH, 1.2);
 
     const zoomP = Math.min(t / 0.60, 1);
-    const fadeP = Math.max(0, Math.min((t - 0.60) / 0.40, 1));
+    
+    // Per user request: drastically reduce opacity earlier to prevent artifacts
+    const fadeP = Math.max(0, Math.min((t - 0.20) / 0.60, 1));
 
-    // Camera: body centre → face, z=7.5 → 1.8
+    // Camera: body centre → face. Stop at z=3.0 to PREVENT near-plane clipping of jacket/hair!
     const lookY = startY.current + (faceY.current - startY.current) * zoomP;
-    const camZ  = 7.5 - zoomP * 5.7;
+    const camZ  = 7.5 - zoomP * 4.5; 
     camera.position.set(0, lookY, camZ);
     camera.lookAt(0, lookY, 0);
 
@@ -129,10 +107,8 @@ function AvatarScene() {
       if (!child.isMesh) return;
       const mats = Array.isArray(child.material) ? child.material : [child.material];
       mats.forEach((m: any) => {
-        // We track the current fading state on the material to know when to toggle settings
         if (m.userData.isFading !== isFading) {
           m.userData.isFading = isFading;
-          
           m.transparent = isFading ? true : m.userData.origTransparent;
           m.depthWrite = isFading ? false : m.userData.origDepthWrite;
           m.needsUpdate = true;
@@ -143,7 +119,7 @@ function AvatarScene() {
   });
 
   return (
-    <group ref={groupRef} position={[0, centreY, 0]} scale={sf}>
+    <group ref={groupRef} position={[0, centreY, centreZ]} scale={sf}>
       <primitive object={scene} />
     </group>
   );
