@@ -10,66 +10,55 @@ export default function BackgroundAudio() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    // Wait for the loader to finish (2800ms) before showing the button
-    const timer = setTimeout(() => {
-      setShowButton(true);
-    }, 2800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!showButton || !audioRef.current) return;
-    
     const audio = audioRef.current;
+    if (!audio) return;
 
-    const playAudio = async () => {
+    const startAudio = async () => {
+      setShowButton(true);
+      if (isPlaying) return;
+
       try {
+        audio.volume = 0;
         await audio.play();
         setIsPlaying(true);
-        // Only start fade if volume is currently 0
-        if (audio.volume === 0) {
-          let vol = 0;
-          const fadeInterval = setInterval(() => {
-            if (vol < 0.4) {
-              vol += 0.05;
-              audio.volume = Math.min(vol, 0.4);
-            } else {
-              clearInterval(fadeInterval);
-            }
-          }, 200);
-        }
-      } catch (err) {
-        console.warn("Audio autoplay blocked. Waiting for user interaction.");
-      }
-    };
-
-    const handleInteraction = () => {
-      if (!hasInteracted) {
         setHasInteracted(true);
-        if (!isPlaying && audio.paused) {
-          playAudio();
-        }
+        
+        // Smooth fade-in
+        let vol = 0;
+        const fadeInterval = setInterval(() => {
+          if (vol < 0.4) {
+            vol += 0.05;
+            audio.volume = Math.min(vol, 0.4);
+          } else {
+            clearInterval(fadeInterval);
+          }
+        }, 200);
+      } catch (err) {
+        console.warn("Autoplay still blocked:", err);
       }
     };
 
-    // Only set initial volume to 0 if it hasn't started playing yet
-    if (!hasInteracted && !isPlaying && audio.volume === 1) {
-      audio.volume = 0;
-      playAudio();
-    }
+    const handleFallbackInteraction = () => {
+      if (showButton && !isPlaying && audio.paused) {
+        startAudio();
+      }
+    };
 
-    window.addEventListener("click", handleInteraction);
-    window.addEventListener("scroll", handleInteraction);
-    window.addEventListener("keydown", handleInteraction);
-    window.addEventListener("touchstart", handleInteraction);
+    // The primary trigger from the Loader's Enter button
+    window.addEventListener("enter-experience", startAudio);
+    
+    // Fallback listeners just in case
+    window.addEventListener("click", handleFallbackInteraction);
+    window.addEventListener("scroll", handleFallbackInteraction);
+    window.addEventListener("touchstart", handleFallbackInteraction);
 
     return () => {
-      window.removeEventListener("click", handleInteraction);
-      window.removeEventListener("scroll", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("enter-experience", startAudio);
+      window.removeEventListener("click", handleFallbackInteraction);
+      window.removeEventListener("scroll", handleFallbackInteraction);
+      window.removeEventListener("touchstart", handleFallbackInteraction);
     };
-  }, [showButton, hasInteracted, isPlaying]);
+  }, [isPlaying, showButton]);
 
   const toggleAudio = () => {
     if (!audioRef.current) return;
@@ -83,67 +72,66 @@ export default function BackgroundAudio() {
     }
   };
 
-  if (!showButton) return null;
-
   return (
     <>
-      {/* Audio element points to the public folder. Make sure to download the mp3 here! */}
       <audio ref={audioRef} loop src="/portfolio/audio/light-awash.mp3" />
       
-      {/* Elegant minimalist sound toggle button */}
-      <motion.button
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        onClick={toggleAudio}
-        style={{
-          position: "fixed",
-          bottom: "2rem",
-          left: "2rem",
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "44px",
-          height: "44px",
-          borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.1)",
-          background: "rgba(2, 7, 20, 0.5)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          color: "rgba(255,255,255,0.8)",
-          cursor: "none", /* matches the custom cursor */
-          outline: "none",
-          transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = "rgba(79, 142, 247, 0.15)";
-          e.currentTarget.style.borderColor = "rgba(79, 142, 247, 0.4)";
-          e.currentTarget.style.color = "#fff";
-          e.currentTarget.style.transform = "scale(1.1) translateY(-2px)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = "rgba(2, 7, 20, 0.5)";
-          e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-          e.currentTarget.style.color = "rgba(255,255,255,0.8)";
-          e.currentTarget.style.transform = "scale(1) translateY(0)";
-        }}
-        aria-label="Toggle background music"
-        className="interactive"
-      >
-        {isPlaying ? (
-          // Pause Icon
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="4" width="4" height="16" rx="1" />
-            <rect x="14" y="4" width="4" height="16" rx="1" />
-          </svg>
-        ) : (
-          // Play Icon
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: "2px" }}>
-            <path d="M5 3L19 12L5 21V3Z" />
-          </svg>
+      <AnimatePresence>
+        {showButton && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+            onClick={toggleAudio}
+            style={{
+              position: "fixed",
+              bottom: "2rem",
+              left: "2rem",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(2, 7, 20, 0.5)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
+              color: "rgba(255,255,255,0.8)",
+              cursor: "none",
+              outline: "none",
+              transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(79, 142, 247, 0.15)";
+              e.currentTarget.style.borderColor = "rgba(79, 142, 247, 0.4)";
+              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.transform = "scale(1.1) translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(2, 7, 20, 0.5)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+              e.currentTarget.style.transform = "scale(1) translateY(0)";
+            }}
+            aria-label="Toggle background music"
+            className="interactive"
+          >
+            {isPlaying ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginLeft: "2px" }}>
+                <path d="M5 3L19 12L5 21V3Z" />
+              </svg>
+            )}
+          </motion.button>
         )}
-      </motion.button>
+      </AnimatePresence>
     </>
   );
 }
