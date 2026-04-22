@@ -19,26 +19,26 @@ export default function BackgroundAudio() {
 
   useEffect(() => {
     if (!showButton || !audioRef.current) return;
-
+    
     const audio = audioRef.current;
-    audio.volume = 0; // Start at 0 for fade in
 
     const playAudio = async () => {
       try {
         await audio.play();
         setIsPlaying(true);
-        // Smoothly fade in volume over 1.6 seconds to 40%
-        let vol = 0;
-        const fadeInterval = setInterval(() => {
-          if (vol < 0.4) {
-            vol += 0.05;
-            audio.volume = Math.min(vol, 0.4);
-          } else {
-            clearInterval(fadeInterval);
-          }
-        }, 200);
+        // Only start fade if volume is currently 0
+        if (audio.volume === 0) {
+          let vol = 0;
+          const fadeInterval = setInterval(() => {
+            if (vol < 0.4) {
+              vol += 0.05;
+              audio.volume = Math.min(vol, 0.4);
+            } else {
+              clearInterval(fadeInterval);
+            }
+          }, 200);
+        }
       } catch (err) {
-        // Autoplay blocked by browser. Wait for user interaction.
         console.warn("Audio autoplay blocked. Waiting for user interaction.");
       }
     };
@@ -46,16 +46,18 @@ export default function BackgroundAudio() {
     const handleInteraction = () => {
       if (!hasInteracted) {
         setHasInteracted(true);
-        if (!isPlaying) {
+        if (!isPlaying && audio.paused) {
           playAudio();
         }
       }
     };
 
-    // Attempt to play immediately (sometimes allowed if user clicked during loader)
-    playAudio();
+    // Only set initial volume to 0 if it hasn't started playing yet
+    if (!hasInteracted && !isPlaying && audio.volume === 1) {
+      audio.volume = 0;
+      playAudio();
+    }
 
-    // Listeners for first interaction
     window.addEventListener("click", handleInteraction);
     window.addEventListener("scroll", handleInteraction);
     window.addEventListener("keydown", handleInteraction);
