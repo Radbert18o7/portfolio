@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useInView } from "react-intersection-observer";
 import MagneticCard from "./MagneticCard";
 
 const contactMethods = [
@@ -48,7 +47,6 @@ const contactMethods = [
 
 export default function Contact() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.08 });
   const [formState, setFormState] = useState({ name: "", email: "", subject: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -70,11 +68,12 @@ export default function Contact() {
       {/* Universe vignette */}
       <div aria-hidden="true" style={{ position:"absolute",inset:0,pointerEvents:"none",zIndex:0,
         background:"radial-gradient(ellipse 90% 100% at 50% 50%,rgba(2,7,20,0.55) 0%,rgba(2,7,20,0.10) 75%,transparent 100%)" }} />
-      <div className="container" ref={ref} style={{ position:"relative", zIndex:1 }}>
+      <div className="container" style={{ position:"relative", zIndex:1 }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7 }}
           style={{ textAlign: "center", marginBottom: "4rem" }}
         >
@@ -100,7 +99,8 @@ export default function Contact() {
           <motion.div style={{ y: leftY }}>
             <motion.div
               initial={{ opacity: 0, x: -50, rotateY: -10 }}
-              animate={inView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, ease: [0.34, 1.2, 0.64, 1] }}
               style={{ perspective: 1000 }}
             >
@@ -197,7 +197,8 @@ export default function Contact() {
           <motion.div style={{ y: rightY }}>
             <motion.div
               initial={{ opacity: 0, x: 50, rotateY: 10 }}
-              animate={inView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.34, 1.2, 0.64, 1] }}
               style={{ perspective: 1000 }}
             >

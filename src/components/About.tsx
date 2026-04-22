@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import MagneticCard from "./MagneticCard";
 
 const highlights = [
@@ -39,7 +40,13 @@ export default function About() {
           }}
         >
           {/* LEFT — bio text */}
-          <div className="about-bio">
+          <motion.div
+            className="about-bio"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
             <p className="section-label">About Me</p>
             <h2 className="section-title">
               Turning Complex Requirements Into{" "}
@@ -116,7 +123,7 @@ export default function About() {
                 </a>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* RIGHT — Highlight cards */}
           <div
@@ -127,45 +134,52 @@ export default function About() {
             }}
           >
             {highlights.map((item, i) => (
-              <MagneticCard
+              <motion.div
                 key={item.title}
-                id={`about-highlight-${i + 1}`}
-                className="about-card"
-                intensity={14}
-                style={{ padding: "1.65rem" }}
+                initial={{ opacity: 0, y: 35, scale: 0.94 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
               >
-                {/* Corner radial glow */}
-                <div
-                  style={{
-                    position: "absolute", top: -20, right: -20,
-                    width: 90, height: 90, borderRadius: "50%",
-                    background: `radial-gradient(circle,${item.color}22,transparent 70%)`,
-                    pointerEvents: "none",
-                  }}
-                />
-                <div
-                  style={{
-                    width: 46, height: 46, borderRadius: 13,
-                    background: `${item.color}12`,
-                    border: `1px solid ${item.color}30`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "1.55rem", marginBottom: "1rem",
-                  }}
+                <MagneticCard
+                  id={`about-highlight-${i + 1}`}
+                  className="about-card"
+                  intensity={14}
+                  style={{ padding: "1.65rem" }}
                 >
-                  {item.icon}
-                </div>
-                <h3
-                  style={{
-                    fontFamily: "var(--font-heading)", fontSize: "0.92rem",
-                    fontWeight: 700, color: "var(--color-text)", marginBottom: "0.45rem",
-                  }}
-                >
-                  {item.title}
-                </h3>
-                <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", lineHeight: 1.65 }}>
-                  {item.desc}
-                </p>
-              </MagneticCard>
+                  {/* Corner radial glow */}
+                  <div
+                    style={{
+                      position: "absolute", top: -20, right: -20,
+                      width: 90, height: 90, borderRadius: "50%",
+                      background: `radial-gradient(circle,${item.color}22,transparent 70%)`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: 46, height: 46, borderRadius: 13,
+                      background: `${item.color}12`,
+                      border: `1px solid ${item.color}30`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: "1.55rem", marginBottom: "1rem",
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)", fontSize: "0.92rem",
+                      fontWeight: 700, color: "var(--color-text)", marginBottom: "0.45rem",
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p style={{ fontSize: "0.8rem", color: "var(--color-text-muted)", lineHeight: 1.65 }}>
+                    {item.desc}
+                  </p>
+                </MagneticCard>
+              </motion.div>
             ))}
           </div>
         </div>

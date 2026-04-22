@@ -88,96 +88,11 @@ export default function ScrollOrchestrator() {
         opacity: 0, y: 40, scale: 0.8, stagger: 0.1, duration: 1, ease: "back.out(2.5)", delay: 1.55,
       });
 
-      /* ── ABOUT ───────────────────────────────────────────── */
-      ScrollTrigger.create({
-        trigger: "#about",
-        start: "top 75%",
-        onEnter: () => {
-          gsap.from("#about .section-label", { opacity: 0, x: -40, duration: 0.8, ease: "expo.out" });
-          gsap.from("#about h2", { opacity: 0, y: 50, duration: 1, ease: "expo.out", delay: 0.1 });
-          gsap.from("#about .about-bio p", { opacity: 0, y: 30, stagger: 0.15, duration: 0.9, ease: "expo.out", delay: 0.2 });
-          gsap.from("#about .availability-tag", { opacity: 0, scale: 0, stagger: 0.05, duration: 0.6, ease: "back.out(3)", delay: 0.5 });
-          gsap.from("#about .about-link", { opacity: 0, x: -20, stagger: 0.1, duration: 0.7, ease: "expo.out", delay: 0.7 });
-          gsap.from(".about-card", {
-            opacity: 0, rotateY: -25, rotateX: 10, scale: 0.85,
-            stagger: 0.12, duration: 1, ease: "back.out(1.5)", delay: 0.2,
-            transformPerspective: 1000,
-          });
-        },
-        once: true,
-      });
-
-      /* ── SKILLS ──────────────────────────────────────────── */
-      ScrollTrigger.create({
-        trigger: "#skills",
-        start: "top 70%",
-        onEnter: () => {
-          gsap.from("#skills .section-label", { opacity: 0, x: -40, duration: 0.8, ease: "expo.out" });
-          gsap.from("#skills h2", { opacity: 0, y: 50, duration: 1, ease: "expo.out", delay: 0.1 });
-          gsap.from("#skills-group-1", {
-            opacity: 0, x: -80, rotateY: 20, duration: 1.1, ease: "expo.out", delay: 0.2, transformPerspective: 1200,
-          });
-          gsap.from("#skills-group-2", {
-            opacity: 0, x: 80, rotateY: -20, duration: 1.1, ease: "expo.out", delay: 0.35, transformPerspective: 1200,
-          });
-          gsap.from("#skills-tools-row", {
-            opacity: 0, y: 40, duration: 0.9, ease: "expo.out", delay: 0.65,
-          });
-        },
-        once: true,
-      });
-
-      /* ── PORTFOLIO ───────────────────────────────────────── */
-      ScrollTrigger.create({
-        trigger: "#portfolio",
-        start: "top 70%",
-        onEnter: () => {
-          gsap.from("#portfolio .section-label", { opacity: 0, x: -40, duration: 0.8, ease: "expo.out" });
-          gsap.from("#portfolio h2", { opacity: 0, y: 50, duration: 1, ease: "expo.out", delay: 0.1 });
-          gsap.from(".filter-btn", { opacity: 0, y: 20, stagger: 0.08, duration: 0.7, ease: "back.out(2)", delay: 0.2 });
-          gsap.from(".project-card-wrapper", {
-            opacity: 0, y: 80, rotateX: 20, scale: 0.88,
-            stagger: 0.12, duration: 1.1, ease: "expo.out", delay: 0.4,
-            transformPerspective: 1200,
-          });
-        },
-        once: true,
-      });
-
-      /* ── CERTIFICATIONS ──────────────────────────────────── */
-      ScrollTrigger.create({
-        trigger: "#certifications",
-        start: "top 72%",
-        onEnter: () => {
-          gsap.from("#certifications .section-label", { opacity: 0, x: -40, duration: 0.8, ease: "expo.out" });
-          gsap.from("#certifications h2", { opacity: 0, y: 50, duration: 1, ease: "expo.out", delay: 0.1 });
-          gsap.from("#cert-cbap®", {
-            opacity: 0, x: -100, rotateY: 30, duration: 1.2, ease: "expo.out", delay: 0.2, transformPerspective: 1200,
-          });
-          gsap.from("#cert-pmi-pba", {
-            opacity: 0, x: 100, rotateY: -30, duration: 1.2, ease: "expo.out", delay: 0.35, transformPerspective: 1200,
-          });
-          gsap.from("#cert-babok-note", { opacity: 0, y: 30, duration: 0.9, ease: "expo.out", delay: 0.6 });
-        },
-        once: true,
-      });
-
-      /* ── CONTACT ─────────────────────────────────────────── */
-      ScrollTrigger.create({
-        trigger: "#contact",
-        start: "top 72%",
-        onEnter: () => {
-          gsap.from("#contact .section-label", { opacity: 0, x: -40, duration: 0.8, ease: "expo.out" });
-          gsap.from("#contact h2", { opacity: 0, y: 50, duration: 1, ease: "expo.out", delay: 0.1 });
-          gsap.from(".contact-method-card", {
-            opacity: 0, x: -60, stagger: 0.1, duration: 0.9, ease: "expo.out", delay: 0.2,
-          });
-          gsap.from("#contact-form-card", {
-            opacity: 0, x: 80, rotateY: -15, duration: 1.2, ease: "expo.out", delay: 0.3, transformPerspective: 1200,
-          });
-        },
-        once: true,
-      });
+      /* ── SECTION SCROLL ANIMATIONS DELEGATED TO FRAMER MOTION ──
+         About, Skills, Portfolio, Certifications, and Contact 
+         now use Framer Motion's whileInView for reliable, 
+         conflict-free scroll triggers in React. 
+      ────────────────────────────────────────────────────────── */
 
       /* ── COUNTER ANIMATION on hero stats ─────────────────── */
       const counters = [

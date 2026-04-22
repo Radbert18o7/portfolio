@@ -370,10 +370,8 @@ h1,h2,h3,h4,h5,h6 {
   height: 100%; border-radius: 2px;
   background: var(--gradient-hero);
   transform-origin: left;
-  transform: scaleX(0);
-  transition: transform 1.5s cubic-bezier(0.4,0,0.2,1);
 }
-.skill-bar-fill.animate { transform: scaleX(1); }
+/* .skill-bar-fill.animate kept for backwards compat but no longer used */
 
 /* ════════════════════════════════════════
    NAVBAR

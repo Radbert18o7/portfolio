@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import MagneticCard from "./MagneticCard";
 
 const skillGroups = [
@@ -42,8 +42,93 @@ const tools = [
   "MS Teams","Trello","Figma","ServiceNow","Salesforce CRM","Postman","SharePoint","Power BI",
 ];
 
+function SkillGroup({ group, gi }: { group: typeof skillGroups[0]; gi: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: gi === 0 ? -50 : 50, rotateY: gi === 0 ? -15 : 15 }}
+      whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.8, delay: gi * 0.15, ease: [0.34, 1.2, 0.64, 1] }}
+      style={{ perspective: 1000 }}
+    >
+      <MagneticCard
+        id={`skills-group-${gi + 1}`}
+        intensity={10}
+        style={{ padding: "2.25rem" }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: "0.85rem",
+            marginBottom: "1.75rem", paddingBottom: "1.1rem",
+            borderBottom: `1px solid ${group.color}25`,
+          }}
+        >
+          <div
+            style={{
+              width: 46, height: 46, borderRadius: 13,
+              background: `${group.color}14`, border: `1px solid ${group.color}28`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "1.35rem",
+            }}
+          >
+            {group.icon}
+          </div>
+          <div>
+            <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, color: "var(--color-text)" }}>
+              {group.title}
+            </h3>
+            <div style={{ width: 44, height: 2, borderRadius: 1, background: group.gradient, marginTop: 5 }} />
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div ref={ref} style={{ display: "flex", flexDirection: "column", gap: "1.35rem" }}>
+          {group.skills.map((skill, si) => {
+            const lv = levelConfig[skill.level];
+            return (
+              <div key={skill.name}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                  <span style={{ fontSize: "0.84rem", fontWeight: 500, color: "var(--color-text)" }}>
+                    {skill.name}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-mono)", fontSize: "0.67rem", fontWeight: 700,
+                      color: lv.color, background: lv.bg,
+                      padding: "0.18rem 0.6rem", borderRadius: 7, border: `1px solid ${lv.color}30`,
+                    }}
+                  >
+                    {skill.level}
+                  </span>
+                </div>
+                <div className="skill-bar-bg">
+                  <motion.div
+                    className="skill-bar-fill"
+                    initial={{ scaleX: 0 }}
+                    animate={inView ? { scaleX: 1 } : { scaleX: 0 }}
+                    transition={{ duration: 1.4, delay: si * 0.08, ease: [0.4, 0, 0.2, 1] }}
+                    style={{
+                      width: `${skill.pct}%`,
+                      background: `linear-gradient(90deg,${group.color},${group.color}80)`,
+                      boxShadow: inView ? `0 0 10px ${group.color}60` : "none",
+                      transform: "none",
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </MagneticCard>
+    </motion.div>
+  );
+}
+
 export default function Skills() {
-  const [animated, setAnimated] = useState(false);
 
   return (
     <section
@@ -88,88 +173,19 @@ export default function Skills() {
           }}
         >
           {skillGroups.map((group, gi) => (
-            <MagneticCard
-              key={group.title}
-              id={`skills-group-${gi + 1}`}
-              intensity={10}
-              style={{ padding: "2.25rem" }}
-            >
-              {/* Header */}
-              <div
-                style={{
-                  display: "flex", alignItems: "center", gap: "0.85rem",
-                  marginBottom: "1.75rem", paddingBottom: "1.1rem",
-                  borderBottom: `1px solid ${group.color}25`,
-                }}
-              >
-                <div
-                  style={{
-                    width: 46, height: 46, borderRadius: 13,
-                    background: `${group.color}14`, border: `1px solid ${group.color}28`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "1.35rem",
-                  }}
-                >
-                  {group.icon}
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 700, color: "var(--color-text)" }}>
-                    {group.title}
-                  </h3>
-                  <div style={{ width: 44, height: 2, borderRadius: 1, background: group.gradient, marginTop: 5 }} />
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: "1.35rem" }}
-                ref={(el) => {
-                  if (el && !animated) {
-                    const obs = new IntersectionObserver(([e]) => {
-                      if (e.isIntersecting) { setAnimated(true); obs.disconnect(); }
-                    }, { threshold: 0.2 });
-                    obs.observe(el);
-                  }
-                }}
-              >
-                {group.skills.map((skill) => {
-                  const lv = levelConfig[skill.level];
-                  return (
-                    <div key={skill.name}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                        <span style={{ fontSize: "0.84rem", fontWeight: 500, color: "var(--color-text)" }}>
-                          {skill.name}
-                        </span>
-                        <span
-                          style={{
-                            fontFamily: "var(--font-mono)", fontSize: "0.67rem", fontWeight: 700,
-                            color: lv.color, background: lv.bg,
-                            padding: "0.18rem 0.6rem", borderRadius: 7, border: `1px solid ${lv.color}30`,
-                          }}
-                        >
-                          {skill.level}
-                        </span>
-                      </div>
-                      <div className="skill-bar-bg">
-                        <div
-                          className={`skill-bar-fill${animated ? " animate" : ""}`}
-                          style={{
-                            width: `${skill.pct}%`,
-                            background: `linear-gradient(90deg,${group.color},${group.color}80)`,
-                            boxShadow: animated ? `0 0 10px ${group.color}60` : "none",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </MagneticCard>
+            <SkillGroup key={group.title} group={group} gi={gi} />
           ))}
         </div>
 
         {/* Tools marquee */}
-        <div style={{ marginTop: "2rem" }} id="skills-tools-row">
+        <motion.div 
+          style={{ marginTop: "2rem" }} 
+          id="skills-tools-row"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
           <MagneticCard intensity={4} style={{ padding: "1.75rem 2rem" }}>
             <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--color-text-dim)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "1rem" }}>
               Tools &amp; Platforms
@@ -182,7 +198,7 @@ export default function Skills() {
               </div>
             </div>
           </MagneticCard>
-        </div>
+        </motion.div>
       </div>
 
       <style>{`
