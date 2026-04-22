@@ -1,14 +1,14 @@
-import type { NextConfig } from "next";
-
 const nextConfig: NextConfig = {
-  /* config options here */
-  output: 'export', // Tells Next.js to produce static files
+  output: 'export',
   images: {
-    unoptimized: true, // GitHub Pages doesn't support the Next.js Image Optimization API
+    unoptimized: true,
   },
-  // Replace 'portfolio' with your actual repository name
   basePath: '/portfolio',
   assetPrefix: '/portfolio/',
+  // Fix for the root directory warning:
+  experimental: {
+    turbo: {
+      root: '.',
+    },
+  },
 };
-
-export default nextConfig;
