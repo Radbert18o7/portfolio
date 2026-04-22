@@ -35,12 +35,12 @@ export default function CustomCursor() {
       const target = e.target as HTMLElement;
       // Check if we're hovering a clickable element
       if (
-        target.tagName.toLowerCase() === "a" ||
-        target.tagName.toLowerCase() === "button" ||
-        target.closest("a") ||
-        target.closest("button") ||
-        target.classList.contains("interactive") ||
-        window.getComputedStyle(target).cursor === "pointer"
+        target?.tagName?.toLowerCase() === "a" ||
+        target?.tagName?.toLowerCase() === "button" ||
+        target?.closest("a") ||
+        target?.closest("button") ||
+        target?.classList?.contains("interactive") ||
+        (target && window.getComputedStyle(target).cursor === "pointer")
       ) {
         setIsHovering(true);
       } else {
@@ -48,13 +48,8 @@ export default function CustomCursor() {
       }
     };
 
-    const handleMouseLeave = () => {
-      setHidden(true);
-    };
-
-    const handleMouseEnter = () => {
-      setHidden(false);
-    };
+    const handleMouseLeave = () => setHidden(true);
+    const handleMouseEnter = () => setHidden(false);
 
     window.addEventListener("mousemove", updateMousePosition);
     window.addEventListener("mouseover", handleMouseOver);
@@ -75,8 +70,17 @@ export default function CustomCursor() {
     <>
       {/* Central Dot - Cyan */}
       <motion.div
-        className="fixed top-0 left-0 w-2 h-2 bg-cyan-400 rounded-full mix-blend-screen pointer-events-none z-[9999]"
         style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#06b6d4",
+          borderRadius: "50%",
+          mixBlendMode: "screen",
+          pointerEvents: "none",
+          zIndex: 9999,
           x: mouseX,
           y: mouseY,
           translateX: "-50%",
@@ -91,8 +95,21 @@ export default function CustomCursor() {
 
       {/* Outer Trailing Ring - Emerald */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 border border-emerald-400 rounded-full pointer-events-none z-[9998] flex items-center justify-center backdrop-blur-[1px]"
         style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "32px",
+          height: "32px",
+          borderStyle: "solid",
+          borderRadius: "50%",
+          pointerEvents: "none",
+          zIndex: 9998,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backdropFilter: "blur(1px)",
+          WebkitBackdropFilter: "blur(1px)",
           x: ringX,
           y: ringY,
           translateX: "-50%",
@@ -111,7 +128,13 @@ export default function CustomCursor() {
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.8 }}
-            className="w-full h-full bg-cyan-400/20 rounded-full blur-[4px]"
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(6, 182, 212, 0.2)",
+              borderRadius: "50%",
+              filter: "blur(4px)",
+            }}
           />
         )}
       </motion.div>
