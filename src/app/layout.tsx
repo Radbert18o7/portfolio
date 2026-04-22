@@ -42,6 +42,7 @@ export const metadata: Metadata = {
 };
 
 import CustomCursor from "@/components/CustomCursor";
+import BackgroundAudio from "@/components/BackgroundAudio";
 
 export default function RootLayout({
   children,
@@ -55,6 +56,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
+        <BackgroundAudio />
         <CustomCursor />
         {children}
       </body>
