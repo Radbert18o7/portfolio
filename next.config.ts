@@ -1,3 +1,5 @@
+import type { NextConfig } from "next";
+
 const nextConfig: NextConfig = {
   output: 'export',
   images: {
@@ -5,10 +7,10 @@ const nextConfig: NextConfig = {
   },
   basePath: '/portfolio',
   assetPrefix: '/portfolio/',
-  // Fix for the root directory warning:
+
   experimental: {
-    turbo: {
-      root: '.',
-    },
+    serverActions: {},
   },
 };
+
+export default nextConfig;
