@@ -40,12 +40,17 @@ function AvatarScene() {
   const initTimer = useRef(0);
   const initDone  = useRef(false);
 
-  // ── Enable transparency ──────────────────────────────────────────────────
+  // ── Store original transparency ──────────────────────────────────────────
   useEffect(() => {
     scene.traverse((child: any) => {
       if (!child.isMesh) return;
       const mats = Array.isArray(child.material) ? child.material : [child.material];
-      mats.forEach((m: any) => { m.transparent = true; m.depthWrite = true; m.needsUpdate = true; });
+      mats.forEach((m: any) => {
+        if (m.userData.origTransparent === undefined) {
+          m.userData.origTransparent = m.transparent;
+          m.userData.origDepthWrite = m.depthWrite;
+        }
+      });
     });
   }, [scene]);
 
@@ -95,10 +100,22 @@ function AvatarScene() {
 
     // Opacity
     const opacity = 1 - fadeP;
+    const isFading = opacity < 1;
     scene.traverse((child: any) => {
       if (!child.isMesh) return;
       const mats = Array.isArray(child.material) ? child.material : [child.material];
-      mats.forEach((m: any) => { m.opacity = opacity; });
+      mats.forEach((m: any) => {
+        // Only force transparency if fading out. Otherwise, use the original setting.
+        const targetTransparent = isFading ? true : m.userData.origTransparent;
+        
+        if (m.transparent !== targetTransparent) {
+          m.transparent = targetTransparent;
+          // Usually better to disable depthWrite during a full-object fade to avoid internal occlusion artifacts
+          m.depthWrite = isFading ? false : m.userData.origDepthWrite;
+          m.needsUpdate = true;
+        }
+        m.opacity = opacity;
+      });
     });
   });
 
