@@ -181,7 +181,7 @@ export default function Hero() {
             Get In Touch
           </a>
           <a
-            href="/files/RAHUL%20JOGI_Resume.pdf"
+            href="/portfolio/files/RAHUL%20JOGI_Resume.pdf"
             download="RAHUL JOGI_Resume.pdf"
             className="btn btn-outline"
             id="hero-resume-btn"

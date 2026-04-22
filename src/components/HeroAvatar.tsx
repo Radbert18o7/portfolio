@@ -22,7 +22,7 @@ function AvatarScene() {
   const groupRef   = useRef<THREE.Group>(null!);
   const { camera } = useThree();
 
-  const { scene, animations } = useGLTF("/models/avatar.glb");
+  const { scene, animations } = useGLTF("/portfolio/models/avatar.glb");
   const { actions, mixer }    = useAnimations(animations, groupRef);
 
   // ── Scale + centre (bounding box) ───────────────────────────────────────
@@ -109,7 +109,7 @@ function AvatarScene() {
   );
 }
 
-useGLTF.preload("/models/avatar.glb");
+useGLTF.preload("/portfolio/models/avatar.glb");
 
 export default function HeroAvatar() {
   const [visible, setVisible] = useState(true);
