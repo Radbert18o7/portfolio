@@ -46,7 +46,7 @@ export default function BackgroundAudio() {
           }, 200);
         }
       } catch (err) {
-        console.warn("Autoplay blocked. Waiting for interaction:", err);
+        // Silently swallow the browser autoplay block so no error is logged
       }
     };
 
@@ -89,7 +89,7 @@ export default function BackgroundAudio() {
 
   return (
     <>
-      <audio ref={audioRef} loop src="/portfolio/audio/light-awash.mp3" />
+      <audio ref={audioRef} autoPlay loop src="/portfolio/audio/light-awash.mp3" />
       
       <AnimatePresence>
         {showButton && (
