@@ -63,31 +63,41 @@ export default function Portfolio() {
     <section
       id="portfolio"
       aria-label="Portfolio projects"
-      style={{ position: "relative", zIndex: 2 }}
+      style={{ position: "relative", zIndex: 2, padding: "var(--section-padding) 0" }}
     >
-      {/* Vignette */}
+      {/* Subtle background glow */}
       <div
         aria-hidden="true"
         style={{
           position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
-          background: "radial-gradient(ellipse 90% 100% at 50% 50%, rgba(2,7,20,0.55) 0%, rgba(2,7,20,0.10) 75%, transparent 100%)",
+          background: "radial-gradient(circle at 50% 50%, rgba(79,142,247,0.05) 0%, transparent 70%)",
         }}
       />
 
       <div className="container" style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ textAlign: "center", marginBottom: "3rem" }}
+        >
           <p className="section-label" style={{ justifyContent: "center" }}>Portfolio</p>
           <h2 className="section-title">Recent <span>Works</span></h2>
           <p className="section-description" style={{ margin: "1rem auto 0", textAlign: "center" }}>
             A selection of projects across AI, web applications, and SaaS platforms
             where I led business analysis and requirements engineering.
           </p>
-        </div>
+        </motion.div>
 
         {/* Filters */}
-        <div
-          style={{ display: "flex", gap: "0.65rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "3rem" }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "4rem" }}
           role="tablist"
         >
           {categories.map((cat) => (
@@ -95,104 +105,90 @@ export default function Portfolio() {
               key={cat}
               role="tab"
               aria-selected={activeCategory === cat}
-              id={`filter-${cat.toLowerCase().replace(/[\s/]+/g,"-")}`}
               className="filter-btn"
               onClick={() => setActiveCategory(cat)}
-              whileTap={{ scale: 0.93 }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.95 }}
               style={{
-                padding: "0.6rem 1.5rem", borderRadius: 999,
-                border: "1.5px solid",
-                borderColor: activeCategory === cat ? "var(--color-primary)" : "var(--color-border)",
+                padding: "0.7rem 1.6rem", 
+                borderRadius: 999,
+                border: "1px solid",
+                borderColor: activeCategory === cat ? "var(--color-primary)" : "rgba(255,255,255,0.15)",
                 background: activeCategory === cat
-                  ? "rgba(79,142,247,0.18)"
-                  : "rgba(255,255,255,0.025)",
-                color: activeCategory === cat ? "var(--color-primary-light)" : "var(--color-text-muted)",
-                fontSize: "0.85rem", fontWeight: 700, cursor: "pointer",
+                  ? "rgba(79,142,247,0.15)"
+                  : "rgba(255,255,255,0.03)",
+                color: activeCategory === cat ? "#fff" : "rgba(255,255,255,0.6)",
+                fontSize: "0.85rem", 
+                fontWeight: 600, 
+                cursor: "pointer",
                 fontFamily: "var(--font-body)",
-                backdropFilter: "blur(12px)",
-                boxShadow: activeCategory === cat ? "0 0 25px rgba(79,142,247,0.25)" : "none",
+                backdropFilter: "blur(10px)",
                 transition: "all 0.3s ease",
               }}
             >
               {cat}
             </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Grid */}
-        <div
+        <motion.div
+          layout
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3,1fr)",
-            gap: "1.5rem",
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gap: "2rem",
           }}
         >
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="wait">
             {filtered.map((project, i) => (
               <motion.div
                 key={project.id}
-                className="project-card-wrapper"
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.85 }}
-                transition={{ duration: 0.5, delay: i * 0.07, ease: [0.34,1.2,0.64,1] }}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4, delay: i * 0.05 }}
               >
                 <MagneticCard
                   id={`project-card-${project.id}`}
-                  intensity={12}
+                  intensity={10}
                   onClick={() => setSelected(project)}
-                  style={{ overflow: "hidden", height: "100%" }}
+                  style={{ height: "100%", display: "flex", flexDirection: "column" }}
                 >
-                  {/* Colour top bar */}
-                  <div style={{ height: 4, background: project.gradient, position: "absolute", top: 0, left: 0, right: 0 }} />
-
-                  {/* Inner tint */}
-                  <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at top left,${project.color}0c,transparent 60%)`, pointerEvents: "none" }} />
-
-                  <div style={{ padding: "2rem 1.75rem 1.75rem", position: "relative" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                      <motion.div whileHover={{ scale: 1.2, rotate: 10 }} style={{ fontSize: "2.5rem", lineHeight: 1 }}>
-                        {project.emoji}
-                      </motion.div>
+                  {/* ... card content ... */}
+                  <div style={{ height: 4, background: project.gradient, width: "100%" }} />
+                  <div style={{ padding: "2.25rem 2rem", flex: 1, display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+                      <span style={{ fontSize: "2.5rem" }}>{project.emoji}</span>
                       <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: "0.67rem", fontWeight: 700,
-                        color: project.color, background: `${project.color}14`,
-                        border: `1px solid ${project.color}35`,
-                        padding: "0.22rem 0.65rem", borderRadius: 8, letterSpacing: "0.04em",
+                        fontFamily: "var(--font-mono)", fontSize: "0.65rem", fontWeight: 700,
+                        color: project.color, background: `${project.color}15`,
+                        padding: "0.25rem 0.75rem", borderRadius: 8, textTransform: "uppercase"
                       }}>
                         {project.category}
                       </span>
                     </div>
-
-                    <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.15rem", fontWeight: 700, color: "var(--color-text)", marginBottom: "0.65rem" }}>
+                    
+                    <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#fff", marginBottom: "0.75rem" }}>
                       {project.title}
                     </h3>
-
-                    <p style={{ fontSize: "0.83rem", color: "var(--color-text-muted)", lineHeight: 1.68, marginBottom: "1.1rem", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    
+                    <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                       {project.description}
                     </p>
-
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.38rem", marginBottom: "1.2rem" }}>
-                      {project.tags.map((t) => <span key={t} className="tag" style={{ fontSize: "0.67rem" }}>{t}</span>)}
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: "0.8rem", fontWeight: 700, color: project.color, display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                        View Case Study
-                        <motion.span animate={{ x: [0,4,0] }} transition={{ repeat: Infinity, duration: 1.5 }}>→</motion.span>
-                      </span>
-                      <div style={{ display: "flex", gap: 4 }}>
-                        {[0,1,2].map((d) => (
-                          <div key={d} style={{ width: 6, height: 6, borderRadius: "50%", background: d === 0 ? project.color : "var(--color-border-hover)", opacity: d === 0 ? 1 : 0.4 }} />
-                        ))}
-                      </div>
+                    
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "auto" }}>
+                      {project.tags.map((t) => (
+                        <span key={t} className="tag" style={{ fontSize: "0.65rem", padding: "0.2rem 0.6rem" }}>{t}</span>
+                      ))}
                     </div>
                   </div>
                 </MagneticCard>
               </motion.div>
             ))}
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
 
       {/* Modal */}

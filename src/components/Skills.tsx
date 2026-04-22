@@ -61,7 +61,13 @@ export default function Skills() {
 
       <div className="container" style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ textAlign: "center", marginBottom: "4rem" }}
+        >
           <p className="section-label" style={{ justifyContent: "center" }}>Expertise</p>
           <h2 className="section-title">
             Skills &amp; <span>Proficiencies</span>
@@ -70,7 +76,7 @@ export default function Skills() {
             A decade of hands-on experience translates into deep proficiency across
             technical analysis, product management, and stakeholder engagement.
           </p>
-        </div>
+        </motion.div>
 
         {/* Skill Groups */}
         <div
