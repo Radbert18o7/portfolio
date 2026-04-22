@@ -10,64 +10,79 @@ export default function BackgroundAudio() {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButton(true);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !showButton) return;
 
     const startAudio = async () => {
-      setShowButton(true);
       if (isPlaying) return;
 
       try {
-        audio.volume = 0;
+        // Only reset volume to 0 if we haven't played yet to allow fade-in
+        if (audio.volume === 1) {
+          audio.volume = 0;
+        }
+        
         await audio.play();
         setIsPlaying(true);
         setHasInteracted(true);
         
         // Smooth fade-in
-        let vol = 0;
-        const fadeInterval = setInterval(() => {
-          if (vol < 0.4) {
-            vol += 0.05;
-            audio.volume = Math.min(vol, 0.4);
-          } else {
-            clearInterval(fadeInterval);
-          }
-        }, 200);
+        if (audio.volume === 0) {
+          let vol = 0;
+          const fadeInterval = setInterval(() => {
+            if (vol < 0.4) {
+              vol += 0.05;
+              audio.volume = Math.min(vol, 0.4);
+            } else {
+              clearInterval(fadeInterval);
+            }
+          }, 200);
+        }
       } catch (err) {
-        console.warn("Autoplay still blocked:", err);
+        console.warn("Autoplay blocked. Waiting for interaction:", err);
       }
     };
 
+    // Attempt autoplay immediately when the loader finishes
+    if (!hasInteracted && !isPlaying) {
+      startAudio();
+    }
+
     const handleFallbackInteraction = () => {
-      if (showButton && !isPlaying && audio.paused) {
+      if (!isPlaying && audio.paused && !hasInteracted) {
         startAudio();
       }
     };
-
-    // The primary trigger from the Loader's Enter button
-    window.addEventListener("enter-experience", startAudio);
     
-    // Fallback listeners just in case
+    // Fallback listeners for the very first interaction if autoplay was blocked
     window.addEventListener("click", handleFallbackInteraction);
     window.addEventListener("scroll", handleFallbackInteraction);
     window.addEventListener("touchstart", handleFallbackInteraction);
 
     return () => {
-      window.removeEventListener("enter-experience", startAudio);
       window.removeEventListener("click", handleFallbackInteraction);
       window.removeEventListener("scroll", handleFallbackInteraction);
       window.removeEventListener("touchstart", handleFallbackInteraction);
     };
-  }, [isPlaying, showButton]);
+  }, [isPlaying, showButton, hasInteracted]);
 
-  const toggleAudio = () => {
+  const toggleAudio = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Stop the click from bubbling to the window and instantly un-pausing it!
     if (!audioRef.current) return;
+    
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
       audioRef.current.play();
-      audioRef.current.volume = 0.4; // Ensure volume is set when manually playing
+      audioRef.current.volume = 0.4;
       setIsPlaying(true);
     }
   };

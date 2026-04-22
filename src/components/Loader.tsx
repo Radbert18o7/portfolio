@@ -5,21 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function Loader() {
   const [loading, setLoading] = useState(true);
-  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Keep the 3D loader compiling for 2.8s, then show the Enter button
-    // This click is absolutely required by modern browsers to allow audio playback!
+    // Keep the loader visible for a fixed time to ensure WebGL compiles
     const timer = setTimeout(() => {
-      setReady(true);
+      setLoading(false);
     }, 2800);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleEnter = () => {
-    setLoading(false);
-    window.dispatchEvent(new Event("enter-experience"));
-  };
 
   return (
     <AnimatePresence>
@@ -78,37 +71,11 @@ export default function Loader() {
                 fontFamily: "var(--font-mono)",
                 fontSize: "0.85rem",
                 color: "var(--color-accent)",
-                opacity: ready ? 0 : 0.8,
-                transition: "opacity 0.5s ease",
-                height: "20px",
+                opacity: 0.8,
               }}
             >
               Loading Portfolio . . . 
             </p>
-
-            <AnimatePresence>
-              {ready && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleEnter}
-                  className="interactive btn btn-outline"
-                  style={{ 
-                    marginTop: "0.5rem", 
-                    borderRadius: "99px", 
-                    padding: "0.75rem 2.5rem",
-                    border: "1px solid rgba(6, 182, 212, 0.4)",
-                    color: "var(--color-secondary)",
-                    background: "rgba(6, 182, 212, 0.05)",
-                    cursor: "none"
-                  }}
-                >
-                  Enter Experience
-                </motion.button>
-              )}
-            </AnimatePresence>
           </motion.div>
         </motion.div>
       )}
