@@ -104,7 +104,7 @@ export default function Loader() {
                     cursor: "none"
                   }}
                 >
-                  Enter Experience
+                  Welcome to the world
                 </motion.button>
               )}
             </AnimatePresence>
