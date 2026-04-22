@@ -40,24 +40,30 @@ function AvatarScene() {
   const initTimer = useRef(0);
   const initDone  = useRef(false);
 
-  // ── Store original transparency ──────────────────────────────────────────
+  // ── Store original transparency & Fix Avaturn Render Order ───────────────
   useEffect(() => {
     scene.traverse((child: any) => {
-      if (!child.isMesh) return;
-      const mats = Array.isArray(child.material) ? child.material : [child.material];
-      mats.forEach((m: any) => {
-        if (m.userData.origTransparent === undefined) {
-          m.userData.origTransparent = m.transparent;
-          m.userData.origDepthWrite = m.depthWrite;
-          m.userData.origAlphaTest = m.alphaTest;
-          
-          // Fix for Ready Player Me / GLTF hair: Use alpha test instead of blend to avoid baldness
-          if (m.transparent) {
-            m.alphaTest = 0.5;
-            m.depthWrite = true;
-          }
+      if (child.isMesh) {
+        // Avaturn uses transparent materials for the body (eyelashes) and hair.
+        // To prevent the body from depth-sorting in front of the hair/glasses
+        // when facing the camera, we enforce a strict renderOrder.
+        const name = child.name.toLowerCase();
+        if (name.includes("hair")) {
+          child.renderOrder = 2;
+        } else if (name.includes("glass")) {
+          child.renderOrder = 3;
+        } else if (name.includes("body") || name.includes("look") || name.includes("shoes")) {
+          child.renderOrder = 1;
         }
-      });
+
+        const mats = Array.isArray(child.material) ? child.material : [child.material];
+        mats.forEach((m: any) => {
+          if (m.userData.origTransparent === undefined) {
+            m.userData.origTransparent = m.transparent;
+            m.userData.origDepthWrite = m.depthWrite;
+          }
+        });
+      }
     });
   }, [scene]);
 
@@ -117,10 +123,9 @@ function AvatarScene() {
           m.userData.isFading = isFading;
           
           m.transparent = isFading ? true : m.userData.origTransparent;
-          // When NOT fading, ensure depthWrite and alphaTest use the hair fix.
-          // When fading, disable alphaTest so we can do a smooth opacity fade down to 0
-          m.depthWrite = isFading ? false : (m.userData.origTransparent ? true : m.userData.origDepthWrite);
-          m.alphaTest = isFading ? 0 : (m.userData.origTransparent ? 0.5 : m.userData.origAlphaTest);
+          // When not fading, we use the original GLTF depthWrite (which is crucial for Avaturn hair blending).
+          // When fading out, we turn off depthWrite to prevent internal occlusion ghosts as it disappears.
+          m.depthWrite = isFading ? false : m.userData.origDepthWrite;
           m.needsUpdate = true;
         }
         m.opacity = opacity;
