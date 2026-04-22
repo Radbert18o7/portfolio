@@ -125,9 +125,6 @@ export default function Contact() {
                     rel={method.id === "linkedin" || method.id === "whatsapp" ? "noopener noreferrer" : undefined}
                     id={`contact-${method.id}`}
                     className="contact-method-card"
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={inView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.5, delay: 0.15 + i * 0.09 }}
                     whileHover={{ scale: 1.025, x: 4 }}
                     style={{
                       display: "flex", alignItems: "center", gap: "1rem",

@@ -56,10 +56,12 @@ export default function Loader() {
             <h2
               style={{
                 fontFamily: "var(--font-heading)",
-                fontSize: "1.2rem",
+                fontSize: "clamp(0.85rem, 3.5vw, 1.2rem)",
                 color: "var(--color-text)",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
+                textAlign: "center",
+                padding: "0 1rem",
               }}
             >
               Taking you to the Journey of Raul
