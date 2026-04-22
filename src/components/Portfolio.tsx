@@ -97,7 +97,16 @@ export default function Portfolio() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap", marginBottom: "4rem" }}
+          style={{ 
+            display: "flex", 
+            gap: "1rem", 
+            justifyContent: "center", 
+            alignItems: "center",
+            flexWrap: "wrap", 
+            marginBottom: "4.5rem",
+            position: "relative",
+            zIndex: 10
+          }}
           role="tablist"
         >
           {categories.map((cat) => (
@@ -105,25 +114,27 @@ export default function Portfolio() {
               key={cat}
               role="tab"
               aria-selected={activeCategory === cat}
-              className="filter-btn"
+              id={`filter-${cat.toLowerCase().replace(/[\s/]+/g,"-")}`}
               onClick={() => setActiveCategory(cat)}
-              whileHover={{ y: -2 }}
+              whileHover={{ y: -3, scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               style={{
-                padding: "0.7rem 1.6rem", 
+                padding: "0.8rem 2rem", 
                 borderRadius: 999,
-                border: "1px solid",
-                borderColor: activeCategory === cat ? "var(--color-primary)" : "rgba(255,255,255,0.15)",
+                border: "1.5px solid",
+                borderColor: activeCategory === cat ? "var(--color-primary)" : "rgba(255,255,255,0.2)",
                 background: activeCategory === cat
-                  ? "rgba(79,142,247,0.15)"
-                  : "rgba(255,255,255,0.03)",
-                color: activeCategory === cat ? "#fff" : "rgba(255,255,255,0.6)",
-                fontSize: "0.85rem", 
-                fontWeight: 600, 
+                  ? "rgba(79,142,247,0.2)"
+                  : "rgba(255,255,255,0.05)",
+                color: activeCategory === cat ? "#fff" : "rgba(255,255,255,0.85)",
+                fontSize: "0.9rem", 
+                fontWeight: 700, 
                 cursor: "pointer",
                 fontFamily: "var(--font-body)",
-                backdropFilter: "blur(10px)",
-                transition: "all 0.3s ease",
+                backdropFilter: "blur(16px)",
+                boxShadow: activeCategory === cat ? "0 0 30px rgba(79,142,247,0.3)" : "none",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                outline: "none",
               }}
             >
               {cat}
