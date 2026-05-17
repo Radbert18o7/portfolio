@@ -67,18 +67,25 @@ function AvatarScene() {
     });
   }, [scene]);
 
-  // ── Idle animation ───────────────────────────────────────────────────────
+  // ── Idle animation FROZEN at frame 0 — natural pose, no movement ─────────
+  // Play the idle clip and immediately pause it so the avatar holds
+  // a natural standing pose instead of reverting to the T-pose.
   useEffect(() => {
     if (!actions) return;
     const key = Object.keys(actions).find(k =>
       k.toLowerCase().includes("idle") || k.toLowerCase().includes("v4")
     ) ?? Object.keys(actions)[0];
-    if (key && actions[key]) actions[key]!.setLoop(THREE.LoopRepeat, Infinity).reset().play();
-  }, [actions]);
+    if (key && actions[key]) {
+      const action = actions[key]!;
+      action.reset().play();
+      action.paused = true;    // freeze at frame 0
+      action.time = 0;
+      if (mixer) mixer.update(0); // apply the pose once
+    }
+  }, [actions, mixer]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-    if (mixer) mixer.update(delta);
 
     // Read Head bone world position once, 0.5s after mount (animation settled)
     initTimer.current += delta;
