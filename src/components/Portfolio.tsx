@@ -6,6 +6,50 @@ import MagneticCard from "./MagneticCard";
 
 const projects = [
   {
+    id:7, title:"AI Agent Orchestration Platform", category:"AI Projects", emoji:"🕸️",
+    color:"#8b5cf6", gradient:"linear-gradient(135deg,#8b5cf6,#6366f1)",
+    description:"Architected a multi-agent orchestration framework enabling autonomous AI agents to collaborate on complex enterprise workflows. Designed the agent registry, inter-agent communication protocol, task decomposition engine, and real-time monitoring dashboard. The system supports dynamic agent spawning, role-based delegation, memory sharing across agent chains, and graceful fallback routing when individual agents encounter failures — delivering end-to-end process automation at scale.",
+    tags:["Multi-Agent Systems","LLM Orchestration","Task Decomposition","Agent Memory","RAG"],
+    highlights:["Agent registry & lifecycle management","Inter-agent messaging protocol","Dynamic task decomposition engine","Real-time orchestration dashboard","Shared memory & context passing","Fallback routing & error recovery"],
+  },
+  {
+    id:8, title:"AI Automation Suite", category:"AI Projects", emoji:"⚡",
+    color:"#06b6d4", gradient:"linear-gradient(135deg,#06b6d4,#22d3ee)",
+    description:"Built a comprehensive AI-powered automation ecosystem leveraging n8n, ComfyUI, Google Opaal, and a suite of custom integrations to eliminate repetitive manual tasks across business operations. The platform connects 50+ workflow nodes — from document parsing and image generation to CRM updates and Slack notifications — orchestrated through intelligent triggers. Includes a visual workflow builder, execution logging, conditional branching with AI decision nodes, and a self-healing retry mechanism that ensures 99.5% workflow completion rates.",
+    tags:["n8n","ComfyUI","Google Opaal","Workflow Automation","No-Code/Low-Code","AI Triggers"],
+    highlights:["50+ integrated workflow nodes","Visual drag-and-drop builder","AI-powered decision branching","Self-healing retry mechanism","Execution logging & audit trail","Cross-platform trigger system"],
+  },
+  {
+    id:9, title:"AI Job Application Agent", category:"AI Projects", emoji:"🎯",
+    color:"#ec4899", gradient:"linear-gradient(135deg,#ec4899,#f472b6)",
+    description:"Developed an intelligent AI agent that autonomously surfs job boards and company career pages, matches openings against an uploaded CV using semantic similarity scoring, and tailors each résumé and cover letter to the specific role — then submits the application in a single click. The system ingests the user's CV to build a rich skills-experience vector, continuously crawls LinkedIn, Indeed, Glassdoor, and niche job boards, ranks opportunities by fit score, rewrites bullet points for ATS optimization, and handles form-filling, document uploads, and submission confirmation across platforms.",
+    tags:["Web Scraping","NLP","CV Tailoring","ATS Optimization","Semantic Matching","Browser Automation"],
+    highlights:["Multi-platform job board crawling","Semantic CV-to-job matching engine","ATS-optimized résumé rewriting","One-click auto-application pipeline","Cover letter personalization","Application tracking dashboard"],
+  },
+  {
+    id:10, title:"Autonomous Trading AI", category:"AI Projects", emoji:"📈",
+    color:"#10b981", gradient:"linear-gradient(135deg,#10b981,#34d399)",
+    description:"Engineered a fully autonomous AI trading agent capable of executing trades across commodities (gold, oil, natural gas), forex pairs (EUR/USD, GBP/JPY), and cryptocurrency markets (BTC, ETH, SOL) — without any human intervention. The system combines technical analysis (200+ indicators), sentiment analysis from financial news and social media, on-chain data analytics for crypto, and reinforcement-learning models that adapt to regime changes in real-time. Features include multi-exchange connectivity, portfolio rebalancing, dynamic risk management with position sizing, drawdown circuit breakers, and full trade journaling with P&L attribution.",
+    tags:["Algorithmic Trading","Reinforcement Learning","Sentiment Analysis","Risk Management","Multi-Asset","DeFi"],
+    highlights:["Multi-asset class execution engine","200+ technical indicator library","Real-time sentiment analysis feed","RL-based adaptive strategy tuning","Drawdown circuit breaker system","Full trade journal & P&L attribution"],
+  },
+  {
+    id:11, title:"AI-Powered Dropshipping Engine", category:"AI Projects", emoji:"🛒",
+    color:"#f59e0b", gradient:"linear-gradient(135deg,#f59e0b,#fbbf24)",
+    status:"Ongoing",
+    description:"Building an end-to-end AI-driven dropshipping operation that autonomously identifies trending products through market research and competitor analysis, reaches out to verified suppliers via automated negotiation workflows, sets up and manages a full Shopify storefront (product listings, pricing, inventory sync), executes digital marketing campaigns across Meta, Google Ads, and TikTok, and processes customer orders — all with minimal human oversight. The system leverages demand forecasting models, automated A/B testing for ad creatives, dynamic pricing algorithms, and a customer service chatbot that handles post-purchase inquiries.",
+    tags:["Shopify","Digital Marketing","Supply Chain","Demand Forecasting","Ad Automation","E-Commerce"],
+    highlights:["AI product trend discovery","Automated supplier outreach & negotiation","Shopify storefront auto-management","Multi-channel ad campaign automation","Dynamic pricing & inventory sync","AI customer service chatbot"],
+  },
+  {
+    id:12, title:"Enterprise AI Solutions — Confidential", category:"AI Projects", emoji:"🔐",
+    color:"#64748b", gradient:"linear-gradient(135deg,#64748b,#94a3b8)",
+    status:"Confidential",
+    description:"Leading a classified AI initiative delivering transformative solutions to large-scale enterprises. This project involves designing and deploying custom AI systems that address critical operational challenges across Fortune 500 organizations — spanning intelligent document processing, predictive analytics for supply chain optimization, and AI-driven decision support platforms. Due to NDA obligations, specific client details and proprietary architectures remain confidential. The engagement covers full-lifecycle delivery: from discovery workshops and feasibility studies through to production deployment and change management.",
+    tags:["Enterprise AI","Confidential","NDA","Fortune 500","Digital Transformation","Strategic Consulting"],
+    highlights:["Enterprise-grade AI architecture","Fortune 500 client engagements","Full-lifecycle project delivery","Change management & adoption","Predictive analytics platforms","NDA-protected IP & methodology"],
+  },
+  {
     id:1, title:"AI Chatbot", category:"AI / NLP", emoji:"🤖",
     color:"#4f8ef7", gradient:"linear-gradient(135deg,#4f8ef7,#7fb3ff)",
     description:"Designed and delivered requirements for an NLP-powered conversational AI chatbot for enterprise client support. Mapped user journeys, defined conversation flows, and coordinated between UX, ML engineering, and business teams.",
@@ -49,7 +93,7 @@ const projects = [
   },
 ];
 
-const categories = ["All","AI / NLP","Web Application","SaaS Platform"];
+const categories = ["All","AI Projects","AI / NLP","Web Application","SaaS Platform"];
 
 export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -86,8 +130,8 @@ export default function Portfolio() {
           <p className="section-label" style={{ justifyContent: "center" }}>Portfolio</p>
           <h2 className="section-title">Recent <span>Works</span></h2>
           <p className="section-description" style={{ margin: "1rem auto 0", textAlign: "center" }}>
-            A selection of projects across AI, web applications, and SaaS platforms
-            where I led business analysis and requirements engineering.
+            A selection of projects across AI agent systems, autonomous automation,
+            web applications, and SaaS platforms — from business analysis to hands-on AI engineering.
           </p>
         </motion.div>
 
@@ -173,13 +217,33 @@ export default function Portfolio() {
                   <div style={{ padding: "2.25rem 2rem", flex: 1, display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.25rem" }}>
                       <span style={{ fontSize: "2.5rem" }}>{project.emoji}</span>
-                      <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: "0.65rem", fontWeight: 700,
-                        color: project.color, background: `${project.color}15`,
-                        padding: "0.25rem 0.75rem", borderRadius: 8, textTransform: "uppercase"
-                      }}>
-                        {project.category}
-                      </span>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.4rem" }}>
+                        <span style={{
+                          fontFamily: "var(--font-mono)", fontSize: "0.65rem", fontWeight: 700,
+                          color: project.color, background: `${project.color}15`,
+                          padding: "0.25rem 0.75rem", borderRadius: 8, textTransform: "uppercase"
+                        }}>
+                          {project.category}
+                        </span>
+                        {("status" in project && project.status) && (
+                          <span style={{
+                            fontFamily: "var(--font-mono)", fontSize: "0.58rem", fontWeight: 700,
+                            color: project.status === "Ongoing" ? "#22d3ee" : "#94a3b8",
+                            background: project.status === "Ongoing" ? "rgba(34,211,238,0.1)" : "rgba(148,163,184,0.1)",
+                            border: `1px solid ${project.status === "Ongoing" ? "rgba(34,211,238,0.3)" : "rgba(148,163,184,0.3)"}`,
+                            padding: "0.15rem 0.55rem", borderRadius: 6, textTransform: "uppercase",
+                            display: "flex", alignItems: "center", gap: "0.35rem",
+                          }}>
+                            <span style={{
+                              width: 5, height: 5, borderRadius: "50%",
+                              background: project.status === "Ongoing" ? "#22d3ee" : "#94a3b8",
+                              boxShadow: project.status === "Ongoing" ? "0 0 6px #22d3ee" : "none",
+                              animation: project.status === "Ongoing" ? "pulse 2s ease-in-out infinite" : "none",
+                            }} />
+                            {project.status}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     
                     <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#fff", marginBottom: "0.75rem" }}>
