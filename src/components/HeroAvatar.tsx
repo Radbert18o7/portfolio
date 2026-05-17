@@ -1,6 +1,6 @@
 /* eslint-disable */
 "use client";
-import { useRef, useMemo, useEffect, Suspense, useState } from "react";
+import { useRef, useMemo, useEffect, Suspense, useState, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
@@ -14,11 +14,11 @@ import * as THREE from "three";
  *   t=0.00  → Full body, side-profile (~108°).
  *   t=0–0.6 → Camera zooms from z=7.5→1.8 and pans lookAt up to the face.
  *              Avatar rotates to face camera.
- *   t=0.6–1.0 → Opacity fades to 0.
+ *   t=0.6–1.0 → CSS opacity fades entire canvas to 0 (simultaneous for all meshes).
  *   t≥1.0   → canvas hidden.
  */
 
-function AvatarScene() {
+function AvatarScene({ onFade }: { onFade: (opacity: number) => void }) {
   const groupRef   = useRef<THREE.Group>(null!);
   const { camera } = useThree();
 
@@ -40,14 +40,22 @@ function AvatarScene() {
   const initTimer = useRef(0);
   const initDone  = useRef(false);
 
-  // ── Store original transparency & Fix Avaturn Render Order ───────────────
+  // ── Clone materials & Fix Avaturn Render Order ────────────────────────────
+  // useGLTF caches the scene — on re-mount, materials may retain corrupted
+  // state from the previous mount. Cloning ensures a clean slate every time.
   useEffect(() => {
     scene.traverse((child: any) => {
       if (child.isMesh) {
-        // Avaturn uses transparent materials for the body (eyelashes) and hair.
-        // To prevent the body from depth-sorting in front of the hair/glasses
-        // when facing the camera, we enforce a strict renderOrder.
+        // Clone materials so cached originals stay pristine across re-mounts
+        if (Array.isArray(child.material)) {
+          child.material = child.material.map((m: any) => m.clone());
+        } else {
+          child.material = child.material.clone();
+        }
+
         const name = child.name.toLowerCase();
+
+        // Enforce strict renderOrder to prevent depth-sorting issues
         if (name.includes("hair")) {
           child.renderOrder = 2;
         } else if (name.includes("glass")) {
@@ -56,20 +64,47 @@ function AvatarScene() {
           child.renderOrder = 1;
         }
 
+        child.frustumCulled = false;
+
         const mats = Array.isArray(child.material) ? child.material : [child.material];
         mats.forEach((m: any) => {
-          if (m.userData.origTransparent === undefined) {
-            m.userData.origTransparent = m.transparent;
-            m.userData.origDepthWrite = m.depthWrite;
+          // Disable alphaHash — causes black triangle stippling on skin
+          m.alphaHash = false;
+
+          // Fix transparency per mesh type
+          if (name.includes("body") || name.includes("look") || name.includes("shoes")) {
+            m.alphaTest = 0.5;
+            m.transparent = false;
+            m.depthWrite = true;
+            m.side = THREE.FrontSide;
+          } else if (name.includes("hair")) {
+            m.alphaTest = 0.1;
+            m.transparent = true;
+            m.depthWrite = false;
+            m.side = THREE.DoubleSide;
+          } else {
+            // glasses etc
+            m.transparent = true;
+            m.depthWrite = false;
           }
+
+          m.needsUpdate = true;
         });
+
+        // Lighten the skin tone — warm fair tint on body texture
+        if (name.includes("body")) {
+          mats.forEach((m: any) => {
+            if (m.color) {
+              m.color.setRGB(1.35, 1.22, 1.12);
+              m.needsUpdate = true;
+            }
+          });
+        }
       }
     });
   }, [scene]);
 
   // ── Idle animation FROZEN at frame 0 — natural pose, no movement ─────────
-  // Play the idle clip and immediately pause it so the avatar holds
-  // a natural standing pose instead of reverting to the T-pose.
   useEffect(() => {
     if (!actions) return;
     const key = Object.keys(actions).find(k =>
@@ -78,24 +113,24 @@ function AvatarScene() {
     if (key && actions[key]) {
       const action = actions[key]!;
       action.reset().play();
-      action.paused = true;    // freeze at frame 0
+      action.paused = true;
       action.time = 0;
-      if (mixer) mixer.update(0); // apply the pose once
+      if (mixer) mixer.update(0);
     }
   }, [actions, mixer]);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
 
-    // Read Head bone world position once, 0.5s after mount (animation settled)
+    // Read Head bone world position once, 0.5s after mount
     initTimer.current += delta;
     if (!initDone.current && initTimer.current > 0.5) {
       const headBone = groupRef.current.getObjectByName("Head");
       if (headBone) {
         const wp = new THREE.Vector3();
         headBone.getWorldPosition(wp);
-        faceY.current  = wp.y + 0.12;  // slightly above Head bone = eye level
-        startY.current = wp.y - 1.1;   // below head = full body start
+        faceY.current  = wp.y + 0.12;
+        startY.current = wp.y - 1.1;
         initDone.current = true;
       }
     }
@@ -118,26 +153,8 @@ function AvatarScene() {
     const ease = zoomP < 0.5 ? 2 * zoomP * zoomP : -1 + (4 - 2 * zoomP) * zoomP;
     groupRef.current.rotation.y = (1 - ease) * (Math.PI * 0.6);
 
-    // Opacity
-    const opacity = 1 - fadeP;
-    const isFading = opacity < 1;
-    scene.traverse((child: any) => {
-      if (!child.isMesh) return;
-      const mats = Array.isArray(child.material) ? child.material : [child.material];
-      mats.forEach((m: any) => {
-        // We track the current fading state on the material to know when to toggle settings
-        if (m.userData.isFading !== isFading) {
-          m.userData.isFading = isFading;
-          
-          m.transparent = isFading ? true : m.userData.origTransparent;
-          // When not fading, we use the original GLTF depthWrite (which is crucial for Avaturn hair blending).
-          // When fading out, we turn off depthWrite to prevent internal occlusion ghosts as it disappears.
-          m.depthWrite = isFading ? false : m.userData.origDepthWrite;
-          m.needsUpdate = true;
-        }
-        m.opacity = opacity;
-      });
-    });
+    // Fade — delegate to CSS opacity on the container (simultaneous for ALL meshes)
+    onFade(1 - fadeP);
   });
 
   return (
@@ -151,6 +168,7 @@ useGLTF.preload("/portfolio/models/avatar.glb");
 
 export default function HeroAvatar() {
   const [visible, setVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Hide the canvas once the hero section is completely scrolled past
   useEffect(() => {
@@ -158,32 +176,40 @@ export default function HeroAvatar() {
       const hero = document.getElementById("hero");
       if (!hero) return;
       const rect = hero.getBoundingClientRect();
-      // Hide when bottom of hero is above viewport top
       setVisible(rect.bottom > 0);
     };
     window.addEventListener("scroll", check, { passive: true });
     return () => window.removeEventListener("scroll", check);
   }, []);
 
+  // CSS opacity callback — applied to the container div so ALL avatar
+  // features (body, hair, glasses, etc.) fade simultaneously as one unit
+  const handleFade = useCallback((opacity: number) => {
+    if (containerRef.current) {
+      containerRef.current.style.opacity = String(opacity);
+    }
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       id="hero-avatar-overlay"
       style={{
-        // FIXED so it doesn't scroll with the page
         position: "fixed",
         top: 0,
         right: 0,
         width: "55%",
         height: "100%",
-        // Behind all text/UI
         zIndex: 0,
         pointerEvents: "none",
         display: visible ? "block" : "none",
+        // GPU-accelerated opacity transition
+        willChange: "opacity",
       }}
     >
       <Canvas
         camera={{ position: [0, 0, 7.5], fov: 40, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance", logarithmicDepthBuffer: true }}
         dpr={[1, 2]}
         style={{ width: "100%", height: "100%" }}
       >
@@ -192,7 +218,7 @@ export default function HeroAvatar() {
         <directionalLight position={[-3, 2, -4]} intensity={0.6} color="#a78bfa" />
         <pointLight       position={[0, 4, 5]}   intensity={1.5} color="#4f8ef7" distance={20} />
         <Suspense fallback={null}>
-          <AvatarScene />
+          <AvatarScene onFade={handleFade} />
         </Suspense>
       </Canvas>
     </div>
