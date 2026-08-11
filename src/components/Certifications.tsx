@@ -44,7 +44,7 @@ export default function Certifications() {
             Certifications <span>In Progress</span>
           </h2>
           <p className="section-description" style={{ margin: "1rem auto 0", textAlign: "center" }}>
-            Committed to achieving the industry&apos;s most respected BA certifications by Q3 2026.
+            Committed to achieving the industry&apos;s most respected professional certifications by Q3 2026.
           </p>
         </motion.div>
 
@@ -177,8 +177,8 @@ export default function Certifications() {
         >
           <p style={{ fontSize: "0.88rem", color: "var(--color-text-muted)", lineHeight: 1.75 }}>
             <span style={{ color: "var(--color-primary)", fontWeight: 700 }}>BABOK® Competencies</span> —
-            Actively studying the Business Analysis Body of Knowledge to align
-            current practices with internationally recognised standards.
+            Actively studying the Business Analysis Body of Knowledge to complement
+            AI and technology skills with internationally recognised standards.
           </p>
         </motion.div>
       </div>

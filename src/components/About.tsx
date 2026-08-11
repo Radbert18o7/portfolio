@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 import MagneticCard from "./MagneticCard";
 
 const highlights = [
-  { icon: "🏦", title: "FinTech / InsureTech", desc: "7+ years in financial & insurance product delivery", color: "#4f8ef7" },
-  { icon: "📊", title: "Agile Practitioner",   desc: "Expert in Scrum, SDLC, backlog & sprint ceremonies", color: "#a78bfa" },
-  { icon: "🤝", title: "Stakeholder Champion", desc: "Bridging business goals with technical execution",   color: "#38bdf8" },
-  { icon: "🌐", title: "Work Flexibility",     desc: "Remote, hybrid, on-site, relocation, all shifts",  color: "#34d399" },
+  { icon: "🤖", title: "AI & Automation",      desc: "Building intelligent agents, LLM orchestration & autonomous workflows", color: "#4f8ef7" },
+  { icon: "🏦", title: "FinTech / InsureTech", desc: "7+ years in financial & insurance product delivery", color: "#a78bfa" },
+  { icon: "📊", title: "Agile Practitioner",   desc: "Expert in Scrum, SDLC, backlog & sprint ceremonies", color: "#38bdf8" },
+  { icon: "🤝", title: "Stakeholder Champion", desc: "Bridging business goals with technical execution",   color: "#34d399" },
+  { icon: "🌐", title: "Work Flexibility",     desc: "Remote, hybrid, on-site, relocation, all shifts",  color: "#f472b6" },
 ];
 
 export default function About() {
@@ -49,22 +50,22 @@ export default function About() {
           >
             <p className="section-label">About Me</p>
             <h2 className="section-title">
-              Turning Complex Requirements Into{" "}
-              <span>Elegant Solutions</span>
+              Turning Complex Challenges Into{" "}
+              <span>Intelligent Solutions</span>
             </h2>
 
             <p style={{ fontSize: "1.05rem", color: "var(--color-text-muted)", lineHeight: 1.88, marginBottom: "1.4rem" }}>
-              Business Analyst with{" "}
+              IT Professional & AI Enthusiast with{" "}
               <strong style={{ color: "var(--color-text)", fontWeight: 700 }}>9 years of experience</strong>,
               including{" "}
               <strong style={{ color: "var(--color-text)", fontWeight: 700 }}>7+ years in FinTech &amp; InsureTech</strong>.
-              Expertise in requirements gathering, process mapping, stakeholder management,
-              and delivering solutions that drive measurable business value.
+              Expertise in AI solutions, automation, requirements gathering, stakeholder management,
+              and delivering technology that drives measurable business value.
             </p>
             <p style={{ fontSize: "1rem", color: "var(--color-text-muted)", lineHeight: 1.88, marginBottom: "2rem" }}>
-              I thrive at the intersection of business and technology, translating complex stakeholder
-              needs into clear, actionable specifications. From ISO compliance frameworks to AI platforms,
-              I ensure every project delivers both technical excellence and business impact.
+              I thrive at the intersection of AI and enterprise technology, building intelligent
+              systems that solve real-world problems. From business analysis and process mapping
+              to autonomous AI agents, I ensure every project delivers both technical excellence and business impact.
             </p>
 
             {/* Availability */}

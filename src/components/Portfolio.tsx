@@ -52,21 +52,21 @@ const projects = [
   {
     id:1, title:"AI Chatbot", category:"AI / NLP", emoji:"🤖",
     color:"#4f8ef7", gradient:"linear-gradient(135deg,#4f8ef7,#7fb3ff)",
-    description:"Designed and delivered requirements for an NLP-powered conversational AI chatbot for enterprise client support. Mapped user journeys, defined conversation flows, and coordinated between UX, ML engineering, and business teams.",
+    description:"Designed and delivered an NLP-powered conversational AI chatbot for enterprise client support. Mapped user journeys, defined conversation flows, and coordinated between UX, ML engineering, and business teams.",
     tags:["NLP","Conversational AI","Requirements","UX Mapping"],
     highlights:["Intent classification","Multi-turn dialogue","CRM integration","Analytics dashboard"],
   },
   {
     id:2, title:"AI Voicebot", category:"AI / NLP", emoji:"🎙️",
     color:"#a78bfa", gradient:"linear-gradient(135deg,#a78bfa,#c4b5fd)",
-    description:"Led BA activities for a voice-enabled AI assistant integrating with telephony systems. Defined speech-to-text requirements, IVR flow redesign, and fallback logic for complex financial queries.",
+    description:"Led the technical workstream for a voice-enabled AI assistant integrating with telephony systems. Defined speech-to-text requirements, IVR flow redesign, and fallback logic for complex financial queries.",
     tags:["Voice AI","IVR","Telephony","STT/TTS"],
     highlights:["Real-time STT","IVR redesign","Sentiment analysis","Compliance tagging"],
   },
   {
     id:3, title:"Fire Alarm System", category:"Web Application", emoji:"🔥",
     color:"#f97316", gradient:"linear-gradient(135deg,#f97316,#fbbf24)",
-    description:"Spearheaded requirements for a web-based fire alarm monitoring platform. Covered real-time alerting, device registry, compliance reporting (ISO 9001), and role-based access control.",
+    description:"Spearheaded development of a web-based fire alarm monitoring platform. Covered real-time alerting, device registry, compliance reporting (ISO 9001), and role-based access control.",
     tags:["IoT","Real-time Alerts","ISO 9001","RBAC"],
     highlights:["Live device monitoring","Automated compliance","Incident audit trail","Multi-site support"],
   },
@@ -87,7 +87,7 @@ const projects = [
   {
     id:6, title:"E-Auction SaaS Platform", category:"SaaS Platform", emoji:"💎",
     color:"#fbbf24", gradient:"linear-gradient(135deg,#fbbf24,#f97316)",
-    description:"Led the BA workstream for a multi-tenant SaaS auction platform. Defined tenant onboarding workflows, configurable auction templates, revenue share models, and compliance dashboards.",
+    description:"Led the technical workstream for a multi-tenant SaaS auction platform. Defined tenant onboarding workflows, configurable auction templates, revenue share models, and compliance dashboards.",
     tags:["SaaS","Multi-tenant","Auction Engine","Compliance"],
     highlights:["Tenant self-onboarding","Configurable auction types","Revenue share engine","Regulator dashboard"],
   },

@@ -68,7 +68,7 @@ export default function Footer() {
                   color: "var(--color-text-dim)",
                 }}
               >
-                IT Business Analyst
+                IT Professional | AI enthusiast
               </div>
             </div>
           </div>

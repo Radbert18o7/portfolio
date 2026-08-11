@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Rahul Jogi | IT Business Analyst — FinTech & InsureTech Expert",
+  title: "Rahul Jogi | IT Professional | AI enthusiast — FinTech & InsureTech Expert",
   description:
-    "Rahul (Raul) Jogi — Business Analyst with 9+ years of experience (7+ in FinTech/InsureTech). Expert in requirements gathering, Agile/Scrum, stakeholder management, and digital transformation. Open to remote, hybrid, and relocation.",
+    "Rahul (Raul) Jogi — IT Professional & AI Enthusiast with 9+ years of experience (7+ in FinTech/InsureTech). Expert in AI solutions, automation, Agile delivery, and digital transformation. Open to remote, hybrid, and relocation.",
   keywords: [
-    "Business Analyst",
-    "IT Business Analyst",
+    "IT Professional",
+    "AI Enthusiast",
     "FinTech",
     "InsureTech",
     "Agile",
@@ -25,15 +25,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "Rahul Jogi | IT Business Analyst",
+    title: "Rahul Jogi | IT Professional | AI enthusiast",
     description:
-      "Business Analyst with 9+ years in FinTech/InsureTech. Available for remote, hybrid, contract and full-time opportunities.",
+      "IT Professional & AI Enthusiast with 9+ years in FinTech/InsureTech. Available for remote, hybrid, contract and full-time opportunities.",
     siteName: "Rahul Jogi Portfolio",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rahul Jogi | IT Business Analyst",
-    description: "9+ years in FinTech/InsureTech | Agile | CBAP Pursuing | Open to Opportunities",
+    title: "Rahul Jogi | IT Professional | AI enthusiast",
+    description: "IT Professional & AI Enthusiast | 9+ years in FinTech/InsureTech | Open to Opportunities",
   },
   robots: {
     index: true,

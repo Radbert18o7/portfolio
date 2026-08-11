@@ -9,6 +9,7 @@ const skillGroups = [
     title: "Technical & Analytical", icon: "⚙️", color: "#4f8ef7",
     gradient: "linear-gradient(135deg,#4f8ef7,#38bdf8)",
     skills: [
+      { name: "AI Solutions & LLM Integration", level: "Advanced", pct: 95 },
       { name: "Business Systems Analysis (BSA)", level: "Advanced", pct: 95 },
       { name: "Agile / Scrum & SDLC", level: "Advanced", pct: 95 },
       { name: "SQL Queries & Excel Pivot Tables", level: "Advanced", pct: 90 },
@@ -160,7 +161,7 @@ export default function Skills() {
           </h2>
           <p className="section-description" style={{ margin: "1rem auto 0", textAlign: "center" }}>
             A decade of hands-on experience translates into deep proficiency across
-            technical analysis, product management, and stakeholder engagement.
+            AI engineering, business analysis, and stakeholder engagement.
           </p>
         </motion.div>
 
